@@ -1,0 +1,98 @@
+<?xml version0"1.0" encoding="UTF-8"?>
+
+<project basedir="." name="AntProject" default="another" >
+	<target name ="test">
+		<echo message="Hello" />
+		<mkdir dir="newDirectory"/>
+	</target>
+
+	<target name ="another" depends="test">
+		<echo message="World!" />
+	</target>
+</project>
+
+
+on command window
+ant -buildfile "name".xml
+or 
+ant
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<project default="displayProperties">
+
+	<!--Properties from a file -->
+	<property file = "build.properties" />
+	<property name = "somekey" value="someValue"/>
+	<property name = "myUrl" value="www.myCompany.com"/>
+	<target name="displayProperties">
+
+	<!-- From Properties file -->
+		<echo message="From Properties file: ${property-name}"/>
+
+	<!-- User Defined Properties -->
+		<echo message="User defined Properties: somekey : ${somekey}, myUrl: ${myUrl}"/>
+
+	<!--Built-in Properties -->
+		<echo message="Built-in Properties: Basedir: ${basedir}, Ant Home: ${ant.home} "/>
+
+	<!-- System properties -->	
+		<echo message = "System Properties: OS Name ${os.name} , JVM Vendor ${java.vm.vendor}"/>
+
+	<!--toString of Types -->
+		<fileset id="xmlfiles" dir ="." includes="*.xml"/>
+		<echo>toString to fileSet: ${toString:xmlfiles} </echo>
+	</target>
+</project>
+
+compilar y ejecutar archivos java
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project default= "run">
+	<target name="compile">
+		<javac srcdir="." includeantruntime="true" includes="HelloWorld.java" destdir="."></javac>
+	</target>
+
+	<target name="run" depends="compile">
+		<java classname="HelloWorld" fork="true">
+			<classpath>
+				<pathelement path="."/>
+			</classpath>
+		</java>
+	</target>
+	
+</project>
+
+
+Create a Javadoc
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="AntProject" default="default">
+	<record name="build.log" loglevel="verbose" append="false"/>
+	<property name="source.dir" value="."/>
+	<property name="doc.dir" value="./docdir"/>
+	
+	<target name="default">
+		<delete dir="${doc.dir}" />
+		<javadoc sourcepath="${source.dir}" destdir="${doc.dir}">
+			<fileseth dir="." />
+			<doctitle>
+				<![CDATA[<h1>Test</h1>]]>
+			</doctitle>
+			<bottom>
+				<![CDATA[<i1>Copyright </i1>]]>
+			</bottom>
+		</javadoc>
+	</target>
+</project>
+
+
+
+
+Work with a personal task package-name=myOwn  class-name=MyCustomTask image-name=myown
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="test" basedir="." default="test">
+	<taskdef name="customanttask" classname="myOwn.MyCustomTask" classpath="myown.jar"/>
+	<target name="test">
+		<customanttask/>
+	</target>
+</project>
