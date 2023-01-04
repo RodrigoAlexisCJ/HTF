@@ -1,0 +1,400 @@
+#git Repository
+-Change/Set user name
+git config --global user.name "name"
+
+-get username
+git config user.name
+
+-Change/Set user email
+git config --global user.email email
+
+-get user email
+git config user.email
+
+#On git bash 
+-List of user's folders and archives
+ls
+
+-Open Current folder
+start .
+
+-List of a reference folder
+ls {rederence-folder}/
+
+example 
+ls downloads/
+
+-List all files hidden files too
+ls -a
+
+-clean the git-bash window
+clear
+
+-Print the current working directory
+pwd
+
+-Change directory
+cd {new-directory}
+
+-Back up one directory
+cd ..
+
+-To create a file (or multiple)
+touch {name}.{extension}
+
+-example/s
+touch hello.js
+touch hello.js goodbye.js
+
+-Create a filde inside a folder/directory
+touch {folder-name}/{name}.{extension}
+
+-Create a new directory (or multiple)
+mkdir {name}
+mkdir {name} {name2}
+
+-Delete/remove an archive/file (not directories)
+rm {name}.{extension}
+
+-Delete-remove a direcory
+rm -rf {directory-name}
+
+-Check the status of our repositories
+git status
+
+-Create or Initialize a git repository (first need to change your working directory) (you only need to run once!!!)
+git init
+
+-Add files into a repository but dont commit that action
+git add {file1} {file2} {file3}
+
+-Add all the change at once
+git add .
+
+-Commit all the changes into a repository
+git commit 
+
+-add a comentary once it commit the changes
+git commit -m "message"
+
+-Log the commint in the current repository
+git log
+
+-Open a code editor (Visual Studio)
+code .
+
+-Use git into vim mode
+git commit
+type i and click enter
+"write the message of the commit"
+type :wq and click enter
+
+-change the log style
+git log --format-type
+*exaple 
+git log --abbrev-commit
+
+-Reduce the log in oneline format
+git log --oneline
+
+-Redo the previous commit
+git commit -ammend
+
+*example
+git commit -m "some commit"
+git add forgotten_file
+git commit -amend
+
+-Use .gitignore to ignore especific files or extensions (use gitignore.io for more references)
+*create a .gitignore directory
+touch .gitignore
+
+*inside the .gitignore insert the file or extensions you want to ignore
+*example
+secret.txt
+*.jsp
+Mybar/
+
+-Let you view the existing branches
+git branch
+
+-Let you view the existing branch with more information
+git branch -v
+
+-Create a new branch based upon the current HEAD but dont switch it as MASTER/MAIN branch
+git branch {branch-name}
+
+-Switch current branch
+git switch {branch-name}
+
+-Commit adding all the changes in a branch
+git commit -a -m {message}
+git commit -am {message}
+
+-Change the current branch (old)
+git checkout {branch-name}
+
+-Create and change the current branch
+git switch -c {branch-name}
+
+-Delete a branch but must to be merged to be deleted (you mustn't be on the branch)
+git branch -d {branch-name}
+
+-Force the delet of a Branch (you mustn't be on the branch)
+git branch -D {branch-name}
+
+-Rename the current branch
+git branch -m {new-branch-name}
+
+-Incorporate changes from one branch into another(the current branch)
+git merge {branch-name}
+
+*example
+git switch master
+git merge bugfixes
+
+-Create and switch to a new branch (checkout)
+git checkout -b {branch-name}
+
+-List all the changes in our working directory that are NOT staged for the next commit (before of the add command)
+git diff
+
+-List all changes in the working tree since your last commit
+git diff HEAD
+
+-List the changes between the staging area and our last commit ("show mre what wuill be
+included if i run commit right now" (after add))
+git diff --staged
+git diff --cached
+
+-View the changes within a specific file by providing a filename
+git diff HEAD {filename}
+git diff --staged {filename}
+
+-List the changes between the tips of differents branches
+git diff {branch-name1}..{branch-name2}
+
+-Clone a repository with a URL 
+git clone {url}
+
+-Compare between two branches an specific file
+git diff {bran1} {branch2} {file-name}
+
+-Help you to save changes that aren't yet ready to commit
+git stash
+
+-Help you to remove all the recent stashed changes in your stash and re-apply them to your
+working copy
+git stash pop
+
+-Apply whatever is stashed away, without removing it from the stash. This can be useful
+if you want to apply stashed changes to multiples branches.
+ git stash apply
+
+-You can create more than a 1 stash you only need to stash every change with a stash command
+git stash -------->stash@{0}
+git stash -------->stash@{1}
+git stash -------->stash@{2}
+etc.....
+
+-And destash in order 
+git stash pop --------> destash stash@{2}
+git stash pop --------> destash stash@{1}
+git stash pop --------> destash stash@{0}
+
+-You can list all the stash that you have
+git stash list
+
+-Apply an specific stash
+git stash appply {no-of-stash}
+
+*example
+git stash apply stash@{1}
+
+-Delete a particular stash
+git stash drop {no-of-stash}
+
+*example
+git stash drop stash@{2}
+
+-To view a previous commit (it use the hashcode so you need to check in ypur commit list)
+!!!!only HEAD point at that commit
+git checkout {commit-hashcode (first 7 numbers)}
+
+*example 
+git checkout d8194d6 <------ {commit-hashcode}
+
+-To view a previous steps of commit before HEAD
+git checkout HEAD~{no-of-step}
+
+*example
+git checkout HEAD~2 <------- two commits before the current commit(HEAD)
+
+-Discard any changes in a specific file, reverting back to the HEAD
+git checkout HEAD {file-and-extension}
+
+also you can use
+git checkout -- {file}
+git checkout -- {file1} {file2}
+
+!!You dont need to add and commit this changes (before add)
+
+-Restore the file to the contents in the HEAD
+git restore {file}
+
+-Change the default source 
+git restore --source HEAD~1 {file}
+
+-If you have accidentally added a file to your staging area with git add and you dont 
+wish to include it in the next commit, you can restore to remove it form staging
+git restore --staged {file}
+
+-Undo Commits but dont undo the changes on the files (don't change the working directory and you need to point and old HEAD)
+git reset {commit-hashcode}
+
+-If you want undo the commit and the actual files changes
+git reset --hard {commit-hashcode}
+or 
+git reset --hard HEAD~1
+
+-Create a brand new commit which reverses/undos the changes from a commit (you need to point the actual or the HEAD that had
+ an error)
+git reverse {commit-hashcode}
+
+-Clone a repository, retrieve all the files associated with the repository and will copy
+them to your local machine. Initialize a new repository on your machine (make your to no
+be ina a repository when copy)
+git clone {url}
+
+-Creat a private key to have access to your online repository (GitHub)
+*check if exist a private key
+ls -al /.ssh
+
+*Create a ssh key
+ssh-keygen -t ed25519 -C "your_email@example.com"
+
+!!!Note: If you are using a legacy system that doesn't support the Ed25519 algorithm, use:
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+
+*Start the ssh-agent in the background (Ensure the ssh-agent is runnig in background)
+eval "$(ssh-agent -s)"
+
+*Add your SSH private key to the ssh-agent. If you created your key with a different name, or if you are adding an existing 
+key that has a different name, replace id_ed25519 in the command with the name of your private key file.
+ssh-add ~/.ssh/id_ed25519
+
+*Copy the SSH public key to your clipboard.
+If your SSH public key file has a different name than the example code, modify the filename to match your current setup. 
+When copying your key, don't add any newlines or whitespace.
+clip < ~/.ssh/id_ed25519.pub
+
+*Paste the copied SSH private key into your github repository/setting/add SSH KEY 
+
+-To view any existing remotes for your repository (display a list of remotes)
+git remote -v
+
+-Adding a new remote(a remotes is a URL and a label (we need to propvide both to Git))
+git remote add {name} {url}
+
+*example (origin is a conventional Git remote name you can change it)
+git remote add origin https://github.com/blah/repo.git
+
+-Rename a remote 
+git remote rename {old-name} {new-name}
+
+-Remove remote
+git remote remove {name}
+
+-Push any change in your loca machine repository into your Github repository 
+git push {remote-name} {branch-name}
+
+*example 
+git push origin master
+
+-Push a local machine branch into a external branch
+git push {remote-name} {local-branch}:{remote-branch}
+
+-Sets the upstream of the local master brnach so that it tracks the master branch 
+on the origin repo
+git push -u {remote-name} {branch-name}
+
+*this allows us to use a shortcut of the command
+git push
+
+-Start a new repository from github to local-machine
+*create a new repository on github
+*add readme/gitignore/licence
+*clone the repository to your local machine
+git clone {url}
+
+
+-Change master branch into a main branch (in orden to work with a Github repo using your 
+local-machine repo (github use main as default branch))
+git branch -M main
+
+-To view the remote branches our local repo knows about
+git branch -r
+
+-To view if the changes are up to date wit the main 
+git switch -
+
+-Work with remotes branch after clone it
+*check the remotes branch 
+git branch -r
+
+*change the branch to a local branch to create a new branch with that name
+git switch {local-branch-name}
+
+*Example
+git clone https://github.com/RodrigoAlexisCJ/GitExrecise.git
+git branch -r
+->origin/main
+->origin/fruits
+->origin/movies
+
+git switch movies
+
+!!Also you can use checkout to do the same work
+git checkout --track origin/movies 
+
+-Use a remote branch
+git checkout {remote-branch-name}
+
+*example
+git checkout origin/fruits
+
+-Fetches branches and history from a specifi remote repository. Its only update remote 
+tracking branches (fetch all changes from the origin remote repository to your local repo)
+ git fetch {remote-name}
+
+*example 
+git fetch origin
+
+-For a specifi branch
+git fetch {remote-name} {branch-name}
+
+*example
+git fetch origin fruits
+
+-Would fetch the latest information from the 
+remote branch and merge those changes into our current branch
+git pull {remote-name} {branch-name}
+
+*Example 
+git pull origin master
+
+!!For mergin problem first pull, add and commit changes and push 
+
+-If we run git pull without specifying a particular remote or branch to pull from, git
+assumes the following:
+.remote will default to origin 
+.branch will default to whatever tracking connection is configured for you current branch 
+git pull
+
+
+
+
+
+
+
+
