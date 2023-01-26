@@ -250,4 +250,434 @@ SELECT {column-name} FROM {table-name} WHERE {condition} GROUP BY {column-name} 
 
 *example
 SELECT deptno,count(*) FROM emp GROUP BY deptno having count(*)>3 order by deptno  
+SELECT deptno,job, count(*) from emp group by deptno,job order by deptno
 
+-Inner queries select within select
+SELECT {column-name} FROM {table-name} WHERE {column-name}={SELECT {column-name} FROM {table-name}.........}
+
+*example
+SELECT * FROM dept WHERE deptno = (SELECT deptno FROM dept WHERE deptno=30)
+SELECT * FROM dept WHERE deptno < (SELECT deptno FROM dept WHERE deptno=30) AND dname = 'ACCOUNTING'
+
+-Join tables and queries
+SELECT {column-name} FROM {table1} {table2}.... WHERE table1.{column-name}=table2.{column-name}
+*example
+SELECT * FROM emp,dept WHERE emp.deptno=dept.deptno
+SELECT * FROM emp e,dept d WHERE e.deptno=d.deptno AND loc= 'DALLAS'
+SELECT e.ename as firstname, job, sal, e.deptno FROM emp e,dept d WHERE e.deptno=d.deptno AND loc= 'DALLAS'
+SELECT e.ename as firstname, job, sal, e.deptno FROM (SELECT * FROM emp) e,(SELECT * FROM dept) d WHERE e.deptno=d.deptno AND loc= 'DALLAS'
+SELECT e.ename as firstname, job, sal, e.deptno FROM (SELECT * FROM emp WHERE job in ('MANAGER','CLERK')) e,(SELECT * FROM dept WHERE loc = 'DALLAS') d WHERE e.deptno=d.deptno 
+
+-INNER JOIN do the same job like the last command show
+SELECT {column-name} FROM {table1} INNER JOIN {table2} ON table1.{column-name}=table2.{column-name}
+*example
+SELECT * FROM emp INNER JOIN dept ON emp.deptno=dept.deptno
+
+-RIGTH JOIN
+SELECT {column-name} FROM {table1} RIGHT JOIN {table2} ON table1.{column-name}=table2.{column-name}
+*example
+SELECT * FROM emp RIGHT JOIN dept ON emp.deptno=dept.deptno
+
+-LEFT JOIN
+SELECT {column-name} FROM {table1} LEFT JOIN {table2} ON table1.{column-name}=table2.{column-name}
+*example
+SELECT * FROM emp LEFT JOIN dept ON emp.deptno=dept.deptno
+
+-RIGTH OUTER JOIN
+SELECT {column-name} FROM {table1} RIGHT OUTER JOIN {table2} ON table1.{column-name}=table2.{column-name}
+*example
+SELECT * FROM emp RIGHT OUTER JOIN dept ON emp.deptno=dept.deptno
+
+-LEFT OUTER JOIN
+SELECT {column-name} FROM {table1} LEFT OUTER JOIN {table2} ON table1.{column-name}=table2.{column-name}
+*example
+SELECT * FROM emp LEFT OUTER JOIN dept ON emp.deptno=dept.deptno
+
+-FULL OUTER JOIN
+SELECT {column-name} FROM {table1} FULL OUTER JOIN {table2} ON table1.{column-name}=table2.{column-name}
+*example
+SELECT * FROM emp FULL OUTER JOIN dept ON emp.deptno=dept.deptno
+SELECT * FROM(SELECT * FROM emp) e FULL OUTER JOIN (SELECT * FROM dept) d ON e.deptno=d.deptno
+
+-RIGTH JOIN (only works on oracle)
+SELECT {column-name} FROM {table1} {table2}.... WHERE table1.{column-name}=table2.{column-name}(+)
+*example
+SELECT * FROM emp,dept WHERE emp.deptno=dept.deptno(+)
+
+-LEFT JOIN (only works on oracle)
+SELECT {column-name} FROM {table1} {table2}.... WHERE table1.{column-name}=table2.{column-name}(+)
+*example
+SELECT * FROM emp,dept WHERE emp.deptno(+)=dept.deptno
+
+-EXISTS condition (if exist do)
+SELECT {column-name} FROM {table-name} WHERE EXISTS ({condition})
+*example
+SELECT * FROM emp WHERE EXISTS (SELECT 'random' FROM dual)
+
+-NOT EXISTS condition (if doesnt exist do)
+SELECT {column-name} FROM {table-name} WHERE NOT EXISTS ({condition})
+*example
+SELECT * FROM emp WHERE NOT EXISTS (SELECT 'random' FROM dual)
+SELECT * FROM emp WHERE NOT EXISTS (SELECT * FROM emp WHERe job='PROGRAMMER')
+SELECT d.* FROM dept d WHERE NOT EXISTS(SELECT * FROM emp WHERE d.deptno=emp.deptno)
+SELECT d.* FROM dept d WHERE NOT EXISTS(SELECT * FROM emp WHERE d.deptno=emp.deptno) AND loc = 'CHICAGO'
+
+-CROSS JOIN
+SELECT {column-name} FROM {table-name1} CROSS JOIN {table-name2}
+*example
+SELECT * FROM emp CROSS JOIN dept
+
+-NATURAL JOIN (an inner join without specifying the column)
+SELECT {column-name} FROM {table-name1} NATURAL JOIN {table-name2}
+*example
+SELECT * FROM emp NATURAL JOIN dept
+
+-JOIN-USING (an inner join specifying the column)
+SELECT {column-name} FROM {table-name1} JOIN {table-name} USING ({column-name})
+*example
+SELECT * FROM emp JOIN dept USING (deptno)
+
+-EQUIJOIN 
+SELECT * FROM e.ename, e.sal, j.grade_level FROM emp e JOIN job_grade j ON e.sal BETWEEN j.lowest_sal AND j.highest_sal 
+
+-CASE STATEMENT
+SELECT {column-name}, (CASE {column-name} 
+WHEN {condition} THEN {value}
+......
+ELSE {value}
+END)
+FROM {table-name}
+
+*example
+SELECT ename, job, (CASE job
+WHEN 'PRESIDENT' THEN 'big-shot'
+WHEN 'MANAGER' THEN 'decides the pay'
+WHEN 'ANALYST' THEN 'good at math'
+WHEN 'CLERK' THEN 'hard working'
+ELSE 'no comment'
+END) AS "COMMENT"
+FROM emp
+
+SELECT ename, sal, CASE
+WHEN sal>= 3000 THEN 'big-shot'
+WHEN sal<3000 THEN 'need more money'
+ELSE 'no comment'
+END AS "COMMENT"
+FROM emp
+ 
+
+-COUNT OVER (count over a column, table, etc)
+SELECT COUNT({column-name}) OVER({window-name}) FROM {table-name}; <-if it's in blanck a whole table window
+
+*example 
+SELECT COUNT(*) OVER() FROM bricks->count all over the whole table
+SELECT b.*, COUNT(*) OVER(partition by colour) total_briks_by_colors FROM bricks b;
+SELECT b.*, SUM(weight) OVER(partition by colour) total_weight_by_color FROM bricks b;
+
+SELECT b.* 
+	sum(weight) OVER (partition by colour ORDER BY brick_id) running_weight_by_color FROM brick b ORDER BY colour;
+
+SELECT b.* 
+	sum(weight) OVER (ORDER BY brick_id range between unbounded preceding and current row) running_weight_by_color FROM brick b ORDER BY colour;
+
+-SLIDING WINDOWS
+SELECT {column-name} sum({colum-name}) OVER(order by {colum-name} rows between {no.} preceding and current row) FROM {table-name}
+*example 
+SELECT b.*, sum(weight) OVER(order by weight rows between 2 preceding and current row) FROM brick b
+
+-RANK
+SELECT {column-name}, row_number() over({function}), rank() over({function}), dense_rank() over({function}) FROM {table-name}
+*example
+SELECT brick_ide, weight,
+row_number() over(order by weight) rn, <- every row has a number
+rank() over(order by weight) r, <- row with the same value has the same rank, and change into n(position in the data set) when the value change
+dense_rank() over(order by weight) dr <-rows with the same value has the same rank
+FROM brick
+
+-LAG, LEAD
+SELECT {column-name}, lag({column-name}) over({function}), lend({column-name}) over({function}) FROM {table-name}
+*example
+SELECT b.*, 
+lag(shape) over(order by brick_id) prev_shape, <- show the next value
+lead(shape) over(order by brick_id) next_shape <- show the previous value
+FROM brick b
+
+-FIRST AND LAST VALUE
+SELECT {column-name}, first_value({column-name}) over({function}), last_value({column-name}) over({function}) FROM {table-name}
+*example
+SELECT b.*,
+first_value(weight) over(order by brick_id), <-don't change in value
+last_value(weight) over(order by brick_id) <-change every row 
+FROM brick b
+
+SELECT 
+b.*,
+first_value(weight) over(order by brick_id), <-don't change in value
+last_value(weight) over(order by brick_id range between current row and unbounded following) <-don't change in value
+FROM brick b
+
+-INSERT
+INSERT INTO {table-name}({colum-name}) VALUES({values})
+*example
+INSERT INTO stores(store_id, city) VALUSE(1,'San Francisco')
+
+-INSERT ALL(insert more than a row)  !!!you need to implement a select statement
+INSERT ALL 
+	INTO {table-name}({column-names}) 
+	INTO {table-name}({column-names}) 
+	INTO {table-name}({column-names}) .....
+SELECT * FROM {table-name} 
+
+*example
+INSERT ALL
+	INTO stores(store_id,city) VALUES (3,'Philadelphia')
+	INTO stores(store_id,city) VALUES (4,'Boston')
+	INTO stores(store_id,city) VALUES (5,'Seattle')
+SELECT * FROM dual;
+
+-CREATE A TABLE with PRIMARY KEY 
+CREATE TABLE products
+(
+product_id number not null,
+name varchar(50),
+product_cost number(5,2),
+product_retail number(5,2),
+product_type varchar(50),
+store_id number not null,
+
+CONSTRAINT product_pk PRIMARY KEY(product_id)
+)
+
+CREATE TABLE Persons (
+    ID int NOT NULL PRIMARY KEY,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255),
+    Age int
+);
+
+-CREATE TABLE with FOREIGN KEY 
+CREATE TABLE Orders (
+    OrderID int NOT NULL PRIMARY KEY,
+    OrderNumber int NOT NULL,
+    PersonID int FOREIGN KEY REFERENCES Persons(PersonID)
+);
+
+CREATE TABLE Orders (
+    OrderID int NOT NULL,
+    OrderNumber int NOT NULL,
+    PersonID int,
+    PRIMARY KEY (OrderID),
+    CONSTRAINT FK_PersonOrder FOREIGN KEY (PersonID)
+    REFERENCES Persons(PersonID)
+);
+
+-Create table with select statement
+CREATE TABLE {table-name} AS SELECT {columns-name} FROM {table-name}
+*example
+CREATE TABLE employee AS SELECT empno,ename,job,hiredate,sal,comm FROM emp 
+
+-Multi-table insert Using INSERT ALL
+INSERT ALL
+INTO {table-1} ({columns-name}) VALUES ({values})
+INTO {table-2} ({columns-name}) VALUES ({values})
+INTO {table-3} ({columns-name}) VALUES ({values})
+SELECT {column-name} FROM {table-name}
+
+-show all the information inside a table (DESCRIBE)
+DESCRIBE {element-name}
+*example
+DESCRIBE emp
+DESCRIBE product_pk
+
+-Alter table to modify datatype
+ALTER TABLE {table-name} MODIFY {colum-name} {datatype-modifier}
+*example
+ALTER TABLE products MODIFY name varchar2(50) not null
+ALTER TABLE products MODIFY (product_cost number(5,2) not null,product_retail number(5,2) not null)
+
+-ALTER table to rename a column
+ALTER TABLE {table-name} RENAME COLUMN {column-name} TO {new-column-name}
+*example
+ALTER TABLE products RENAME COLUMN name TO product_name
+
+-ALTER table to add a new column (when you add a new column it's null)
+ALTER TABLE {table-name} ADD {column-name} {datatype}
+*example
+ALTER TABLE employee ADD store_id number 
+
+-ALTER TABLE to add a primary key
+ALTER TABLE {table-name} ADD CONSTRAINT {primary-key-name} PRIMARY KEY ({values})
+*example
+ALTER TABLE Persons
+ADD CONSTRAINT PK_Person PRIMARY KEY (ID,LastName);
+
+-ALTER TABLE to add a foreign key
+ALTER TABLE {foreign-key-table}
+ADD FOREIGN KEY ({foreign-key-column}) REFERENCES {primary-key-table}({primary-key-column});
+*example
+ALTER TABLE Orders
+ADD FOREIGN KEY (PersonID) REFERENCES Persons(PersonID);
+ALTER TABLE Orders
+ADD CONSTRAINT FK_PersonOrder
+FOREIGN KEY (PersonID) REFERENCES Persons(PersonID);
+
+-DROP eliminates everything from the table (structure,data etc)
+DROP {type-of-element} {name-of-element}
+*example
+DROP TABLE products
+
+-DROP a primary key
+ALTER TABLE {table-name} DROP CONSTRAINT {primary-key-name}
+*example
+ALTER TABLE Persons
+DROP CONSTRAINT PK_Person;
+
+-DROP a foreign key
+ALTER TABLE {foreign-key-table} DROP CONSTRAINT {foreign-key-name}
+*example
+ALTER TABLE Orders
+DROP CONSTRAINT FK_PersonOrder;
+
+-DELETE (if you dont use a where condition it will delete all the rows in the table)
+DELETE FROM {table-name} WHERE {condition}
+*example
+DELETE FROM products WHERE product_id = 1001
+
+-UPDATE 
+UPDATE {table-name} SET {column-name}={value} WHERE {criteria}
+*example
+UPDATE employee SET store_id=3 WHERE ename IN ('KING','BLAKE','CLARK')
+
+-Merge statement
+MERGE INTO {table-name1} USING {table-name2} ON {table1-parameter=table2-parameter} WHEN MATCHED THEN UPDATE SET {table1-parameter=table2-parameter}
+*example
+MERGE INTO existing_customers c
+USING new_customers n
+ON (c.customer_id=n.customer_id)
+WHEN MATCHED THEN 
+UPDATE SET 
+c.first_name=n.first_name,
+c.last_name=n.last_name, 
+c.address_state=n.address_state,
+c.email_address= n.email_address
+WHEN NOT MATCHED THEN
+INSERT (c.first_name,c.last_name,c.address_state,c.email_address)
+VALUES (n.first_name,n.last_name,n.address_state,n.email_address)
+
+-Sequence statement 
+CREATE SEQUENCE {sequence-name} 
+MINVALUE {min-value}
+MAXVALUE {max-value}
+START WITH {start-value} <- must be higher or equal than the min-value
+INCREMENT BY {step value}
+CACHE {value}/NOCACHE <- save/don't save in cache the first {value} values 
+
+*example
+CREATE SEQUENCE product_seq
+MINVALUE 1
+MAXVALUE 1000
+START WITH 100 
+INCREMENT BY 100
+NOCACHE
+
+-SHOW THE value in the sequence 
+SELECT {sequence-name}.NEXTVAL FROM DUAL
+*example
+SELECT product_seq.NEXTVAL FROM DUAL <-show the recent value (on memory) of the sequence 
+
+-Alter sequence to modify cache
+ALTER SEQUENCE {sequence-name} CACHE({value})/NOCACHE
+*example
+ALTER SEQUENCE product_seq CACHE(20)
+ALTER SEQUENCE product_seq NOCACHE
+
+-TRUNCATE rid up all the data in the table (eliminates all the data from the table)
+TRUNCATE TABLE {table-name}
+*example
+TRUNCATE TABLE emp
+
+-INDEX (whe you have a primary key it's already indexes)
+CREATE INDEX {index-name} ON {table-name} ({columns-name})
+*example
+CREATE INDEX emp_name_idx ON employee (ename)
+CREATE INDEX emp_name_job_date_idx ON employee(ename,job,hiredate)
+CREATE INDEX emp_name_idx ON employee(ename) COMPUTE STATISTICS
+CREATE INDEX emp_name_idx ON employee(ename) REBUILD COMPUTE STATISTICS 
+
+-DELETE duplicate data from a table with rowid(specific id of a row(every row have an specific id except the duplicates they have the same))
+!first you need to know if exist any duplicate row with a select statement 
+SELECT {columns-name} FROM {table-name} GROUP BY {columns-name} ORDER BY {statement}
+*example
+SELECT store_id, city, count(*) FROM stores GROUP BY store_id, city ORDER BY COUNT(*) <-it shows the number of duplicate row with the same store_id and cityt
+
+!second you need to know the row identifier
+SELECT rowid, {columns-name} FROM {table-name} 
+*example
+SELECT rowid,store_id,city FROM stores
+
+!third delete the duplicates
+DELETE FROM {table-name} WHERE rowid {condition}
+*example
+DELETE FROM stores WHERE rowid NOT IN(SELECT MIN(rowid) FROM stores GROUP BY store_id,city)
+
+!!!show all the table (only work on oracle)
+SELECT * FROM all_tables
+SELECT * FROM all_tables WHERE table_name='EMPLOYEE'
+SELECT * FROM all_tables WHERE table_name='EMPLOYEE' AND rownum<10
+SELECT * FROM all_tab_COLUMNS WHERE table_name='EMPLOYEE'
+SELECT * FROM ALL_OBJECTS WHERE ROWNUM<50
+SELECT * FROM ALL_OBJECTS WHERE object_type='TABLE' AND ROWNUM<50
+SELECT * FROM ALL_OBJECTS WHERE lower(object_name)='emp_name_idx' AND object_type='TABLE' AND ROWNUM<50
+
+-CREATE SYNONYM 
+CREATE SYNONYM {synonym-name} FROM {table-name}
+*example
+CREATE SYNONYM emp_tab FROM employee
+
+-CREATE VIEW 
+CREATE VIEW {view-name} AS {SELECT_statement}
+*example
+CREATE VIEW manager_v AS SELECT * FROM employee WHERE JOB='MANAGER'
+SELECT * FROM manager_v
+
+-UNION (union two queries, don't show the duplicates)
+{select statement} UNION {select statement}
+*example
+SELECT * FROM super_employee UNION SELECT * FROM employee
+
+-UNION ALL(union two queries, show the duplicates)
+{select statement} UNION ALL {select statement}
+*example
+SELECT * FROM super_employee UNION ALL SELECT * FROM employee
+
+-MINUS (dont show the information in the second query)
+{select statement} MINUS {select statement}
+*example
+SELECT * FROM super_employee MINUS SELECT * FROM employee WHERE job='SALESMAN'
+
+DCL DATA CONTROL LANGUAGE
+-GRANT access
+GRANT {Privileges} ON {object-name} TO {users-name}
+*example
+GRANT SELECT ON products TO U3
+GRANT UPDATE ON products TO U3,U4
+GRANT DELETE ON products TO U3,U4,TAZ
+GRANT SELECT,UPDATE,DELETE ON products TO U3,U4,TAZ
+
+-REVOKE access
+REVOKE {Privileges} ON {object-name} FROM {users-name}
+*example
+REVOKE SELECT ON products FROM U3
+REVOKE UPDATE ON products FROM U3,U4
+REVOKE DELETE ON products FROM U3,U4,TAZ
+REVOKE SELECT,UPDATE,DELETE ON products FROM U3,U4,TAZ
+
+-ROLE
+CREATE ROLE {roles};
+GRANT {privileges} TO {roles};
+ALTER USER {user-name} default Role {role};
+
+!!!
+SHOW USER <- it show you all the user-schema (dont work on apex)
+SELECT sys_context('userenv','current_schema') FROM DUAL <-(it's work only in oracle apex)
+SELECT sys_context('userenv','current_schema') AS "USER" FROM DUAL
