@@ -695,7 +695,6 @@ SELECT {column-name} FROM {table-name} FETCH FIRST {percent} PERCENT ROWS ONLY
 *example
 SELECT product_name,quantity FROM products ORDER BY quantity DESC FETCH FIRST 5 PERCENT ROWS ONLY
 
-
 -OFFSET skip a number of rows before the limiting rows start showing
 SELECT {column-name} FROM {table-name} OFFSET {quantity} ROWS FETCH NEXT {quantity} ROWS ONLY
 *example
@@ -726,3 +725,57 @@ because you are saving all the changes on the data base twice when you run the c
 *TCL Transaction control language (commit, savepoint, rollback)
 
 BEGIN/ END (execute a bloclk of code)
+
+-Cascade Constraints (let you choose a parent key (constarint) to be alter in all the tables that make reference of it)
+ALTER TABLE {table-name} DROP COLUMN {contraint-name} CASCADE CONSTRAINTS 
+
+-Cascade delete(let you delete element if the parent table delete some rows)
+*example
+CREATE TABLE  products(
+produtc_id numeric(10) not null,
+suplier_id numeric(10) not null,
+CONSTRAINT fk_supplier
+FOREIGN KEY (suplier_id)
+REFERENCES suplier(suplier_id)
+ON DELETE CASCADE  
+)
+
+-Using Alter table to add delete casacade 
+ALTER TABLE {foreign-key-table}
+ADD FOREIGN KEY ({foreign-key-column}) REFERENCES {primary-key-tables}({primary-key-column}) ON DELETE CASCADE;
+
+-drop multiples columns
+ALTER TABLE {table-name} DROP {columns-name} CASCADE CONSTRAINTS
+*example
+ALTER TABLE supplier DROP (supplier_id, contact_name) CASCADE CONSTRAINTS
+
+-Make unable a column (UNUSED)
+ALTER TABLE {table-name} SET UNUSED COLUMN {column-name} 
+*example 
+ALTER TABLE supplier SET UNUSED COLUMN supplier_name
+
+-DROP all the unused column
+ALTER TABLE {table-name} DROP UNUSED COLUMNS
+*example 
+ALTER TABLE supplier DROP UNUSED COLUMNS
+
+!!!!!ORACLE SQL+
+-PROMPT
+prompt {message}
+*example
+prompt hello there 
+
+-ACCEPT 
+accept {variable-name}
+*example
+accept varinput prompt "give an input: "
+
+-Show variable
+prompt {message} &{variable-name}
+*example 
+prompt the value of varinput is: &varinput
+
+-Use a variable in a select statement
+SELECT {column-names} FROM {table-name} WHERE {column-name}=&{variable-name}
+*example
+SELECT * FROM customers WHERE first_name='&vname'
