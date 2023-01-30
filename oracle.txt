@@ -681,3 +681,48 @@ ALTER USER {user-name} default Role {role};
 SHOW USER <- it show you all the user-schema (dont work on apex)
 SELECT sys_context('userenv','current_schema') FROM DUAL <-(it's work only in oracle apex)
 SELECT sys_context('userenv','current_schema') AS "USER" FROM DUAL
+
+!!!LIMIT dont exist on oraqle use FETCH
+SELECT {column-name} FROM {table-name} FETCH NEXT {quantity} ROWS ONLY
+*example
+SELECT product_name,quantity FROM products ORDER BY quantity DESC FETCH NEXT 5 ROWS ONLY
+-WITH TIES (Displays the following values with the same structure as the last row)
+SELECT {column-name} FROM {table-name} FETCH NEXT {quantity} ROWS WITH TIES
+*example
+SELECT product_name,quantity FROM products ORDER BY quantity DESC FETCH NEXT 5 ROWS WITH TIES
+-PERCENT (Displays a percent of the total of rows in a table)
+SELECT {column-name} FROM {table-name} FETCH FIRST {percent} PERCENT ROWS ONLY
+*example
+SELECT product_name,quantity FROM products ORDER BY quantity DESC FETCH FIRST 5 PERCENT ROWS ONLY
+
+
+-OFFSET skip a number of rows before the limiting rows start showing
+SELECT {column-name} FROM {table-name} OFFSET {quantity} ROWS FETCH NEXT {quantity} ROWS ONLY
+*example
+SELECT product_name,quantity FROM products ORDER BY quantity DESC OFFSET 5 ROWS FETCH NEXT 5 ROWS ONLY
+
+-ROLLBACK
+*example
+INSERT INTO supplier(supplier_id,supplier_name,contact_name) values (10,'1st supplier','John Dolan')
+COMMIT; <- commit change in the database
+INSERT INTO supplier(supplier_id,supplier_name,contact_name) values (20,'2nd supplier','Steve Reeves')
+INSERT INTO supplier(supplier_id,supplier_name,contact_name) values (30,'3rd supplier','Peter Marcello')
+SAVEPOINT my_savepoint <- supplier checkpoint
+UPDATE SET contact_name = 'Elite Lumber' WHERE supplier_id=20 <- i commit a mistake so i need to return a step back (is 30 instead 20)
+ROLLBACK my_savepoint <- i return to my supplier checkpoint
+
+UPDATE SET contact_name = 'Elite Lumber' WHERE supplier_id=30 <-and solve my last mistake
+COMMIT<- and commit my last change 
+
+!!!! If you use rollback without specify the checkpoint it will return until the last commit made
+
+!!!!!When you run a commit command you are doing a explicit commit , but when a DDL (CREATE) or DCL (GRANT) command is run you are doing a implicit commit
+because you are saving all the changes on the data base twice when you run the command an when the command finish it process
+
+*DML Data Manipulation Language (delete,update,insert)
+*DDL Data Definition Language (Create, drop, view)
+*DCL Data Control Language (grant, revoke)
+
+*TCL Transaction control language (commit, savepoint, rollback)
+
+BEGIN/ END (execute a bloclk of code)
